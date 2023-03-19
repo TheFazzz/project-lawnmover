@@ -112,7 +112,14 @@ public:
   // Return true when this disk_state is fully sorted, with all light disks on
   // the left (low indices) and all dark disks on the right (high indices).
   bool is_sorted() const {
-      
+    for (size_t i = 0; i < total_count() / 2; i++) {
+    // check if first half is all light
+      if (i < total_count() / 2) {
+        if (_colors[i] == DISK_DARK) {
+          return false;
+        }
+      }
+    }
       return true;
   }
 };
@@ -145,17 +152,41 @@ public:
 // Algorithm that sorts disks using the alternate algorithm.
 sorted_disks sort_alternate(const disk_state& before) {
 	int numOfSwap = 0;                                                                      //record # of step swap
+    // Initializing another disk
+    disk_state after = before;
+    
+    for (size_t i = 1; i < after.total_count() / 2; i++) {
+        for (size_t j = i; j < after.total_count() - 1; j++) {
+        // dark(1) and light(0) swap if dark then light
+        if (after.get(j) > after.get(j + 1)) {
+        after.swap(j);
+        numOfSwap++;
+      }
+    }
  
-          }
+}
 
-  return sorted_disks(disk_state(state), numOfSwap);
+  return sorted_disks(disk_state(after), numOfSwap);
 }
 
 
 // Algorithm that sorts disks using the lawnmower algorithm.
 sorted_disks sort_lawnmower(const disk_state& before) {
-  	
-	  }
+    int numOfSwap = 0;
+    disk_state after = before;
 
-  return sorted_disks(disk_state(state), numOfSwap);
+    // Loop over the entire list
+    for (size_t i = 0; i < after.total_count() - 1; i++) {
+    // Loop left-to-right and right-to-left over the list at O(n) complexity
+        for (size_t j = 1; j < after.total_count() - 1; j++) {
+        // dark(1) and light(0) swap if dark then light
+        if (after.get(j) > after.get(j + 1)) {
+            after.swap(j);
+            numOfSwap++;
+      }
+    }
+  	
+    }
+
+  return sorted_disks(disk_state(after), numOfSwap);
 }
